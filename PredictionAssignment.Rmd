@@ -1,15 +1,13 @@
 ---
 title: "Practical Machine Learning Peer Assessment: Prediction Assignment"
-author: "Xiaoqun Zhu"
 date: "Saturday, October 19, 2014"
 output: 
-html_document:
-keep_md: true
+  html_document:
+    keep_md: true
 ---
-```{r, echo=FALSE}
-knitr::opts_chunk$set(echo=TRUE) 
+```{r echo=FALSE}
+#knitr::opts_chunk$set(echo=TRUE) 
 ```
-
 ## Background
 
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
@@ -58,16 +56,6 @@ set.seed(2048)
 
 rfFit=randomForest(classe~.,data=training,ntree=100, importance=TRUE)
 rfFit
-
-#set.seed(1234)
-# Fit rf model
-#rfFit <- train(classe ~ ., method = "rf", data = training, importance = T, trControl = trainControl#(method = "cv", number = 4))
-#validation_pred <- predict(rfFit, newdata=validation_clean)
-# Check model performance
-#confusionMatrix(validation_pred,validation_clean$classe)
-
-#imp <- varImp(rfFit)$importance
-#varImpPlot(rfFit$finalModel, sort = TRUE, type = 1, pch = 19, col = 1, cex = 1, main = "Importance #of the Predictors")
 ```
 
 Provide error reports for both training and test data.
