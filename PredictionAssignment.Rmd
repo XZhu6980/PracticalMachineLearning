@@ -18,9 +18,6 @@ Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible t
 library(Hmisc)
 library(caret)
 library(randomForest)
-library(foreach)
-library(doParallel)
-set.seed(2048)
 options(warn=-1)
 ```
 
@@ -53,27 +50,24 @@ training <- model_data[idx,]
 testing <- model_data[-idx,]
 ```
 
-## Build Random Forest Model and Predict Testing Data
-We now build 5 random forests with 150 trees each. We make use of parallel processing to build this
-model. I found several examples of how to perform parallel processing with random forests in R, this
-provided a great speedup.
+## Build Random Forest Model
+Lets fit a random forest and see how well it performs
 
 ```{r}
-#registerDoParallel()
-#x <- training[-ncol(training)]
-#y <- training$classe
+set.seed(2048)
 
-#rf <- foreach(ntree=rep(150, 6), .combine=randomForest::combine, .packages='randomForest') %dopar% #{randomForest(x, y, ntree=ntree) }
+rfFit=randomForest(classe~.,data=training,ntree=100, importance=TRUE)
+rfFit
 
-set.seed(1234)
+#set.seed(1234)
 # Fit rf model
-rfFit <- train(classe ~ ., method = "rf", data = training, importance = T, trControl = trainControl(method = "cv", number = 4))
-validation_pred <- predict(rfFit, newdata=validation_clean)
+#rfFit <- train(classe ~ ., method = "rf", data = training, importance = T, trControl = trainControl#(method = "cv", number = 4))
+#validation_pred <- predict(rfFit, newdata=validation_clean)
 # Check model performance
-confusionMatrix(validation_pred,validation_clean$classe)
+#confusionMatrix(validation_pred,validation_clean$classe)
 
-imp <- varImp(rfFit)$importance
-varImpPlot(rfFit$finalModel, sort = TRUE, type = 1, pch = 19, col = 1, cex = 1, main = "Importance of the Predictors")
+#imp <- varImp(rfFit)$importance
+#varImpPlot(rfFit$finalModel, sort = TRUE, type = 1, pch = 19, col = 1, cex = 1, main = "Importance #of the Predictors")
 ```
 
 Provide error reports for both training and test data.
@@ -84,12 +78,14 @@ confusionMatrix(predictions1,training$classe)
 
 predictions2 <- predict(rfFit, newdata=testing)
 confusionMatrix(predictions2,testing$classe)
+
+plot(rfFit, log="y")
+varImpPlot(rfFit,)
 ```
 
 ## Conclusions 
 
-As can be seen from the confusion matrix this model is very accurate.  I did experiment with PCA 
-and other models, but did not get as good of accuracy. Because my test data was around 99% 
+The confusion matrix shows that the model is very accurate.  I did experiment with cross validation, PCA and other models, but did not get as good of accuracy. Because my test data was around 99% 
 accurate I expected nearly all of the submitted test cases to be correct.  It turned out they 
 were all correct.
 
@@ -108,7 +104,7 @@ pml_write_files = function(x){
 
 x <- evaluation_data
 x <- x[feature_set[feature_set!='classe']]
-answers <- predict(rf, newdata=x)
+answers <- predict(rfFit, newdata=x)
 
 answers
 
